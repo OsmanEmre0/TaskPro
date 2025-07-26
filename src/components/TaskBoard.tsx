@@ -57,12 +57,15 @@ interface DroppableColumnProps {
 }
 
 function DroppableColumn({ id, title, tasks, color, children }: DroppableColumnProps) {
-  const { setNodeRef } = useDroppable({
+  const { setNodeRef, isOver } = useDroppable({
     id: id,
   });
 
   return (
-    <div ref={setNodeRef} className={`rounded-2xl border-2 border-dashed ${color} p-5 min-h-[400px]`}>
+    <div
+      ref={setNodeRef}
+      className={`rounded-2xl border-2 border-dashed ${color} p-5 min-h-[400px] relative transition-all duration-200 ${isOver ? 'ring-4 ring-violet-200/60' : ''}`}
+    >
       <div className="flex items-center justify-between mb-4">
         {id === 'todo' ? (
           <>
@@ -87,10 +90,8 @@ function DroppableColumn({ id, title, tasks, color, children }: DroppableColumnP
           </>
         )}
       </div>
-      
       <div className="space-y-4">
         {children}
-        
         {tasks.length === 0 && (
           <div className="text-center py-12 text-slate-400">
             <div className="w-16 h-16 mx-auto mb-4 bg-white/50 rounded-full flex items-center justify-center">
@@ -100,6 +101,9 @@ function DroppableColumn({ id, title, tasks, color, children }: DroppableColumnP
           </div>
         )}
       </div>
+      {isOver && (
+        <div className="absolute inset-0 pointer-events-none rounded-2xl ring-4 ring-violet-200/60 z-10"></div>
+      )}
     </div>
   );
 }
@@ -152,8 +156,17 @@ export function TaskBoard() {
     }
 
     const taskId = active.id as string;
-    const newStatus = over.id as string;
-    
+    let newStatus = over.id as string;
+
+    // Eğer bir task'ın üstüne değil de doğrudan sütuna bırakıldıysa, sütun id'sini kullan
+    if (!['todo', 'in-progress', 'completed'].includes(newStatus)) {
+      // over.id bir task id'si ise, o task'ın bulunduğu sütunun id'sini bul
+      const overTask = filteredTasks.find(t => t.id === newStatus);
+      if (overTask) {
+        newStatus = overTask.status;
+      }
+    }
+
     const task = filteredTasks.find(t => t.id === taskId);
     if (task && task.status !== newStatus) {
       updateTask({ ...task, status: newStatus as Task['status'] });
