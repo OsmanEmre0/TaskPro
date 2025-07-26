@@ -57,14 +57,23 @@ interface DroppableColumnProps {
 }
 
 function DroppableColumn({ id, title, tasks, color, children }: DroppableColumnProps) {
-  const { setNodeRef, isOver } = useDroppable({
+  const { setNodeRef, isOver, active } = useDroppable({
     id: id,
   });
+
+  // Sütun rengine göre ring rengi belirle
+  let ringColor = '';
+  if (id === 'todo') ringColor = 'ring-amber-300/60';
+  else if (id === 'in-progress') ringColor = 'ring-blue-300/60';
+  else if (id === 'completed') ringColor = 'ring-emerald-300/60';
+
+  // Sadece section'un boş alanına sürükleniyorsa border kalınlaşsın
+  const isSectionOver = isOver && active && active.data?.current?.over?.id === id;
 
   return (
     <div
       ref={setNodeRef}
-      className={`rounded-2xl border-2 border-dashed ${color} p-5 min-h-[400px] relative transition-all duration-200 ${isOver ? 'ring-4 ring-violet-200/60' : ''}`}
+      className={`rounded-2xl border-2 border-dashed ${color} p-5 min-h-[400px] relative transition-all duration-200 ${isSectionOver ? `ring-4 ${ringColor}` : ''}`}
     >
       <div className="flex items-center justify-between mb-4">
         {id === 'todo' ? (
@@ -101,8 +110,8 @@ function DroppableColumn({ id, title, tasks, color, children }: DroppableColumnP
           </div>
         )}
       </div>
-      {isOver && (
-        <div className="absolute inset-0 pointer-events-none rounded-2xl ring-4 ring-violet-200/60 z-10"></div>
+      {isSectionOver && (
+        <div className={`absolute inset-0 pointer-events-none rounded-2xl ring-4 ${ringColor} z-10`}></div>
       )}
     </div>
   );
