@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Recharts focus outline & hover cursor background kaldırma */
+.recharts-wrapper:focus,
+.recharts-surface:focus {
+  outline: none;
+}
+
+/* SVG içinde Recharts bar hover cursor fill'ini gizle */
+.recharts-bar-rectangle:focus {
+  outline: none;
+}

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { Task, TaskFilters, TaskStats } from '../types/Task';
 
 export function useTaskFilters(

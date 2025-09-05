@@ -81,28 +81,26 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-gradient-to-br from-white to-gray-50/50 rounded-2xl shadow-2xl w-full max-w-md backdrop-blur-sm border border-gray-200/50">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200/50">
+      <div className="bg-slate-50 dark:bg-slate-50 rounded-2xl shadow-2xl w-full max-w-md border border-violet-100 dark:border-violet-200">
+        <div className="flex items-center justify-between p-6 border-b border-violet-100 dark:border-violet-200 bg-gradient-to-r from-violet-50/80 to-purple-50/60 rounded-t-2xl">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
             {isSignUp ? 'Hesap Oluştur' : 'Giriş Yap'}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-xl"
+            className="text-gray-400 hover:text-violet-600 transition-colors p-2 hover:bg-violet-50 rounded-xl"
           >
             <X className="h-6 w-6" />
           </button>
         </div>
-
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-sm font-medium">
+            <div className="p-3 bg-rose-50 dark:bg-rose-900 border border-rose-200 dark:border-rose-700 rounded-xl text-rose-600 dark:text-rose-300 text-sm font-medium">
               {error}
             </div>
           )}
-
           <div>
-            <label htmlFor="email" className="flex items-center text-sm font-semibold text-slate-700 mb-2">
+            <label htmlFor="email" className="text-sm font-semibold text-black mb-2 flex items-center">
               <Mail className="h-4 w-4 mr-2" />
               Email Adresi
             </label>
@@ -111,14 +109,14 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white/70 backdrop-blur-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all duration-200"
+              className="w-full px-4 py-3 border rounded-xl bg-white text-slate-900 focus:ring-2 focus:ring-violet-400/40 focus:border-violet-400 transition-all duration-200 shadow-sm border-violet-100 placeholder:text-slate-400"
               placeholder="ornek@email.com"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="flex items-center text-sm font-semibold text-slate-700 mb-2">
+            <label htmlFor="password" className="text-sm font-semibold text-black mb-2 flex items-center">
               <Lock className="h-4 w-4 mr-2" />
               Şifre
             </label>
@@ -145,7 +143,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
           {isSignUp && (
             <div>
-              <label htmlFor="confirmPassword" className="flex items-center text-sm font-semibold text-slate-700 mb-2">
+              <label htmlFor="confirmPassword" className="text-sm font-semibold text-black mb-2 flex items-center">
                 <Lock className="h-4 w-4 mr-2" />
                 Şifre Tekrar
               </label>
@@ -165,7 +163,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full px-6 py-3 mt-2 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 border-0"
           >
             {loading ? 'İşleniyor...' : (isSignUp ? 'Hesap Oluştur' : 'Giriş Yap')}
           </button>

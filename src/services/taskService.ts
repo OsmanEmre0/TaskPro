@@ -45,9 +45,10 @@ export const taskService = {
   async getTasks(userId: string): Promise<Task[]> {
     const { data, error } = await supabase
       .from('user_tasks')
-      .select('*')
+      .select('id, user_id, title, description, priority, status, due_date, category, created_at, updated_at')
       .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(100);
 
     if (error) {
       console.error('Error fetching tasks:', error);

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useCallback } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { TaskProvider, useTask } from './context/TaskContext';
 import { useAuth } from './context/AuthContext';
@@ -10,26 +10,25 @@ import { TaskCalendar } from './components/TaskCalendar';
 import { TaskModal } from './components/TaskModal';
 import { LoginScreen } from './components/LoginScreen';
 import { useTaskFilters } from './hooks/useTaskFilters';
+import { Sidebar } from './components/Sidebar';
+import { Statistics } from './components/Statistics';
 
 function AppContent() {
   const { state, dispatch } = useTask();
   const { user, loading } = useAuth();
-  const { tasks, filteredTasks, filters, viewMode } = state;
+  const { tasks, filters, viewMode } = state;
 
   // Handle filtering
-  useTaskFilters(
-    tasks,
-    filters,
-    (filtered) => dispatch({ type: 'SET_FILTERED_TASKS', payload: filtered }),
-    (stats) => dispatch({ type: 'SET_STATS', payload: stats })
-  );
+  const setFilteredTasks = useCallback((filtered: any[]) => {
+    dispatch({ type: 'SET_FILTERED_TASKS', payload: filtered });
+  }, [dispatch]);
 
-  // Initialize filtered tasks when tasks change
-  useEffect(() => {
-    if (tasks.length > 0 && filteredTasks.length === 0 && !filters.search && filters.status === 'all' && filters.priority === 'all' && filters.dateRange === 'all') {
-      dispatch({ type: 'SET_FILTERED_TASKS', payload: tasks });
-    }
-  }, [tasks, filteredTasks, filters, dispatch]);
+  const setStats = useCallback((stats: any) => {
+    dispatch({ type: 'SET_STATS', payload: stats });
+  }, [dispatch]);
+
+  useTaskFilters(tasks, filters, setFilteredTasks, setStats);
+
 
   if (loading) {
     return (
@@ -52,22 +51,25 @@ function AppContent() {
         return <TaskBoard />;
       case 'calendar':
         return <TaskCalendar />;
+      case 'stats':
+        return <Statistics />;
       default:
         return <TaskList />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-100">
-      <Header />
-      <FilterBar />
-      
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 to-purple-500/5 rounded-3xl -z-10"></div>
-        {renderContent()}
-      </main>
-      
-      <TaskModal />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-100 flex">
+      <Sidebar />
+      <div className="flex-1 min-w-0 lg:ml-0 ml-16 flex flex-col">
+        <Header />
+        <FilterBar />
+        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative w-full">
+          <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 to-purple-500/5 rounded-3xl -z-10"></div>
+          {renderContent()}
+        </main>
+        <TaskModal />
+      </div>
     </div>
   );
 }

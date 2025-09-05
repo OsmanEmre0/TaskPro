@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, ReactNode, useRef } from 'react';
 import { Task, TaskFilters, TaskStats } from '../types/Task';
 import { useAuth } from './AuthContext';
 import { taskService } from '../services/taskService';
@@ -10,7 +10,7 @@ interface TaskState {
   stats: TaskStats;
   selectedTask: Task | null;
   isModalOpen: boolean;
-  viewMode: 'list' | 'calendar' | 'board';
+  viewMode: 'list' | 'calendar' | 'board' | 'stats';
 }
 
 type TaskAction =
@@ -23,7 +23,7 @@ type TaskAction =
   | { type: 'SET_STATS'; payload: TaskStats }
   | { type: 'SET_SELECTED_TASK'; payload: Task | null }
   | { type: 'SET_MODAL_OPEN'; payload: boolean }
-  | { type: 'SET_VIEW_MODE'; payload: 'list' | 'calendar' | 'board' };
+  | { type: 'SET_VIEW_MODE'; payload: 'list' | 'calendar' | 'board' | 'stats' };
 
 const initialState: TaskState = {
   tasks: [],
@@ -49,7 +49,7 @@ const TaskContext = createContext<{
   setFilters: (filters: Partial<TaskFilters>) => void;
   openModal: (task?: Task) => void;
   closeModal: () => void;
-  setViewMode: (mode: 'list' | 'calendar' | 'board') => void;
+  setViewMode: (mode: 'list' | 'calendar' | 'board' | 'stats') => void;
 } | undefined>(undefined);
 
 function taskReducer(state: TaskState, action: TaskAction): TaskState {
@@ -113,13 +113,16 @@ function taskReducer(state: TaskState, action: TaskAction): TaskState {
 export function TaskProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(taskReducer, initialState);
   const { user } = useAuth();
+  const isFetching = useRef(false);
 
   // Load tasks when user changes
   useEffect(() => {
-    if (user) {
-      loadTasks();
-    } else {
-      // Clear tasks when user logs out
+    if (user && !isFetching.current) {
+      isFetching.current = true;
+      loadTasks().finally(() => {
+        isFetching.current = false;
+      });
+    } else if (!user) {
       dispatch({ type: 'SET_TASKS', payload: [] });
       dispatch({ type: 'SET_FILTERED_TASKS', payload: [] });
     }
@@ -179,7 +182,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_SELECTED_TASK', payload: null });
   };
 
-  const setViewMode = (mode: 'list' | 'calendar' | 'board') => {
+  const setViewMode = (mode: 'list' | 'calendar' | 'board' | 'stats') => {
     dispatch({ type: 'SET_VIEW_MODE', payload: mode });
   };
 
