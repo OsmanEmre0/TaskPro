@@ -7,9 +7,10 @@ interface HeaderProps {
   onProfileClick: () => void;
   onSettingsClick?: () => void;
   onHelpClick?: () => void;
+  onNotificationsClick?: () => void;
 }
 
-export function Header({ onProfileClick, onSettingsClick, onHelpClick }: HeaderProps) {
+export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotificationsClick }: HeaderProps) {
   const { openModal } = useTask();
   const { user, signOut } = useAuth();
   // Sidebar state removed (unused)
@@ -149,7 +150,7 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick }: HeaderP
               <button
                 onClick={() => {
                   setUserMenuOpen(false);
-                  // Add notifications functionality here
+                  if (onNotificationsClick) onNotificationsClick();
                 }}
                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
               >
