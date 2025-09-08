@@ -6,9 +6,10 @@ import { useAuth } from '../context/AuthContext';
 interface HeaderProps {
   onProfileClick: () => void;
   onSettingsClick?: () => void;
+  onHelpClick?: () => void;
 }
 
-export function Header({ onProfileClick, onSettingsClick }: HeaderProps) {
+export function Header({ onProfileClick, onSettingsClick, onHelpClick }: HeaderProps) {
   const { openModal } = useTask();
   const { user, signOut } = useAuth();
   // Sidebar state removed (unused)
@@ -69,7 +70,7 @@ export function Header({ onProfileClick, onSettingsClick }: HeaderProps) {
             <div className="flex items-center space-x-4">
               
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <button
                 onClick={() => setIsDark((d) => !d)}
                 className="p-2 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 transition-colors dark:border-gray-700 dark:hover:bg-gray-800 dark:text-gray-200"
@@ -92,10 +93,10 @@ export function Header({ onProfileClick, onSettingsClick }: HeaderProps) {
                 <Plus className="h-4 w-4" />
                 <span className="hidden sm:inline">Yeni Görev</span>
               </button>
-              <div className="relative ml-4 pl-4 border-l border-gray-200">
+              <div className="relative ml-2 pl-2 sm:ml-4 sm:pl-4 border-l border-gray-200">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center space-x-2 text-sm hover:bg-gray-50 rounded-xl p-2 transition-all duration-200"
+                  className="flex items-center space-x-2 text-sm hover:bg-gray-50 rounded-xl p-1.5 sm:p-2 transition-all duration-200"
                 >
                   <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center">
                     <User className="h-4 w-4 text-white" />
@@ -159,7 +160,7 @@ export function Header({ onProfileClick, onSettingsClick }: HeaderProps) {
               <button
                 onClick={() => {
                   setUserMenuOpen(false);
-                  // Add help functionality here
+                  if (onHelpClick) onHelpClick();
                 }}
                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
               >

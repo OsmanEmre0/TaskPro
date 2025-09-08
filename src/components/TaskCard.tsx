@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Edit2, Trash2, Clock, Flag, CheckCircle, Circle, PlayCircle } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Edit2, Trash2, Clock, Flag, CheckCircle, Circle, PlayCircle, MoreVertical } from 'lucide-react';
 import { Task } from '../types/Task';
 import { useTask } from '../context/TaskContext';
 
@@ -10,6 +10,20 @@ interface TaskCardProps {
 export function TaskCard({ task }: TaskCardProps) {
   const { updateTask, deleteTask, openModal } = useTask();
   const [showConfirm, setShowConfirm] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    if (menuOpen) {
+      document.addEventListener('mousedown', onDocClick);
+    }
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, [menuOpen]);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -73,7 +87,7 @@ export function TaskCard({ task }: TaskCardProps) {
       <div className={`bg-white rounded-2xl shadow-md border-2 border-gray-300 p-5 hover:shadow-xl transition-all duration-300 backdrop-blur-sm hover:border-violet-400 group ${
         task.status === 'completed' ? 'opacity-75' : ''
       }`}>
-        <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start justify-between mb-3 relative">
           <div className="flex items-center space-x-2">
             <button
               onClick={toggleStatus}
@@ -88,20 +102,52 @@ export function TaskCard({ task }: TaskCardProps) {
             </h3>
           </div>
           <div className="flex items-center space-x-1">
-            <button
-              onClick={() => openModal(task)}
-              className="p-2 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
-              title="Düzenle"
-            >
-              <Edit2 className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setShowConfirm(true)}
-              className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
-              title="Sil"
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
+            {/* Desktop hover actions */}
+            <div className="hidden lg:flex items-center space-x-1">
+              <button
+                onClick={() => openModal(task)}
+                className="p-2 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
+                title="Düzenle"
+              >
+                <Edit2 className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setShowConfirm(true)}
+                className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
+                title="Sil"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+            {/* Mobile/Tablet kebab menu */}
+            <div className="lg:hidden relative" ref={menuRef}>
+              <button
+                onClick={() => setMenuOpen(v => !v)}
+                className="p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100"
+                aria-haspopup="menu"
+                aria-expanded={menuOpen}
+              >
+                <MoreVertical className="h-5 w-5" />
+              </button>
+              {menuOpen && (
+                <div className="absolute right-0 mt-2 w-36 rounded-xl border border-gray-200 bg-white shadow-lg z-10">
+                  <button
+                    onClick={() => { setMenuOpen(false); openModal(task); }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 rounded-t-xl"
+                  >
+                    <Edit2 className="h-4 w-4 text-gray-400" />
+                    <span>Düzenle</span>
+                  </button>
+                  <button
+                    onClick={() => { setMenuOpen(false); setShowConfirm(true); }}
+                    className="w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 flex items-center space-x-2 rounded-b-xl"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span>Sil</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         

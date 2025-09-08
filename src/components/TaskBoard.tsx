@@ -73,33 +73,33 @@ function DroppableColumn({ id, title, tasks, color, children }: DroppableColumnP
   return (
     <div
       ref={setNodeRef}
-      className={`rounded-2xl border-2 border-dashed ${color} p-5 min-h-[400px] relative transition-all duration-200 ${isSectionOver ? `ring-4 ${ringColor}` : ''}`}
+      className={`rounded-2xl border-2 border-dashed ${color} p-4 sm:p-5 min-h-[320px] sm:min-h-[400px] relative transition-all duration-200 ${isSectionOver ? `ring-4 ${ringColor}` : ''}`}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
         {id === 'todo' ? (
           <>
-            <h3 className="font-bold text-amber-700 text-lg">{title}</h3>
-            <span className="ml-2 bg-white/80 backdrop-blur-sm text-slate-700 text-sm px-3 py-1 rounded-full shadow-sm border border-gray-200/50">
+            <h3 className="font-bold text-amber-700 text-base sm:text-lg">{title}</h3>
+            <span className="ml-2 bg-white/80 backdrop-blur-sm text-slate-700 text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full shadow-sm border border-gray-200/50">
               {tasks.length}
             </span>
           </>
         ) : id === 'in-progress' ? (
           <>
-            <h3 className="font-bold text-blue-700 text-lg">{title}</h3>
-            <span className="ml-2 bg-white/80 backdrop-blur-sm text-slate-700 text-sm px-3 py-1 rounded-full shadow-sm border border-gray-200/50">
+            <h3 className="font-bold text-blue-700 text-base sm:text-lg">{title}</h3>
+            <span className="ml-2 bg-white/80 backdrop-blur-sm text-slate-700 text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full shadow-sm border border-gray-200/50">
               {tasks.length}
             </span>
           </>
         ) : (
           <>
-            <h3 className="font-bold text-emerald-700 text-lg">{title}</h3>
-            <span className="ml-2 bg-white/80 backdrop-blur-sm text-slate-700 text-sm px-3 py-1 rounded-full shadow-sm border border-gray-200/50">
+            <h3 className="font-bold text-emerald-700 text-base sm:text-lg">{title}</h3>
+            <span className="ml-2 bg-white/80 backdrop-blur-sm text-slate-700 text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full shadow-sm border border-gray-200/50">
               {tasks.length}
             </span>
           </>
         )}
       </div>
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {children}
         {tasks.length === 0 && (
           <div className="text-center py-12 text-slate-400">
@@ -191,7 +191,7 @@ export function TaskBoard() {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {columns.map(column => (
           <DroppableColumn
             key={column.id}
