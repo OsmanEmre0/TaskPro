@@ -3,6 +3,7 @@ import { TaskCard } from './TaskCard';
 import { useTask } from '../context/TaskContext';
 import { Task } from '../types/Task';
 import { CheckSquare } from 'lucide-react';
+import { useI18n } from '../context/I18nContext';
 import {
   DndContext,
   DragEndEvent,
@@ -60,6 +61,7 @@ function DroppableColumn({ id, title, tasks, color, children }: DroppableColumnP
   const { setNodeRef, isOver, active } = useDroppable({
     id: id,
   });
+  const { t } = useI18n();
 
   // Sütun rengine göre ring rengi belirle
   let ringColor = '';
@@ -106,7 +108,7 @@ function DroppableColumn({ id, title, tasks, color, children }: DroppableColumnP
             <div className="w-16 h-16 mx-auto mb-4 bg-white/50 rounded-full flex items-center justify-center">
               <CheckSquare className="h-8 w-8 text-slate-300" />
             </div>
-            <p className="text-sm font-medium">Bu sütunda görev yok</p>
+            <p className="text-sm font-medium">{t('kanban.empty')}</p>
           </div>
         )}
       </div>
@@ -121,6 +123,7 @@ export function TaskBoard() {
   const { state, updateTask } = useTask();
   const { filteredTasks } = state;
   const [activeTask, setActiveTask] = React.useState<Task | null>(null);
+  const { t } = useI18n();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -133,19 +136,19 @@ export function TaskBoard() {
   const columns = [
     { 
       id: 'todo', 
-      title: 'Yapılacak', 
+      title: t('kanban.todo'), 
       tasks: filteredTasks.filter(task => task.status === 'todo'),
       color: 'border-amber-200/50 bg-gradient-to-br from-amber-50/50 to-yellow-50/30 backdrop-blur-sm'
     },
     { 
       id: 'in-progress', 
-      title: 'Devam Ediyor', 
+      title: t('kanban.inProgress'), 
       tasks: filteredTasks.filter(task => task.status === 'in-progress'),
       color: 'border-blue-200/50 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 backdrop-blur-sm'
     },
     { 
       id: 'completed', 
-      title: 'Tamamlandı', 
+      title: t('kanban.completed'), 
       tasks: filteredTasks.filter(task => task.status === 'completed'),
       color: 'border-emerald-200/50 bg-gradient-to-br from-emerald-50/50 to-green-50/30 backdrop-blur-sm'
     }

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Plus, LogOut, User, Settings, UserCircle, ChevronDown, Bell, HelpCircle, Moon, SunMedium, Languages } from 'lucide-react';
 import { useTask } from '../context/TaskContext';
 import { useAuth } from '../context/AuthContext';
+import { useI18n } from '../context/I18nContext';
 
 interface HeaderProps {
   onProfileClick: () => void;
@@ -17,7 +18,7 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const [isDark, setIsDark] = useState<boolean>(false);
-  const [lang, setLang] = useState<'tr' | 'en'>(() => (localStorage.getItem('lang') as 'tr' | 'en') || 'tr');
+  const { lang, setLanguage, t } = useI18n();
 
   // Close user menu when clicking outside
   useEffect(() => {
@@ -58,9 +59,7 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
 
   const toggleLang = () => {
     const next = lang === 'tr' ? 'en' : 'tr';
-    setLang(next);
-    localStorage.setItem('lang', next);
-    // TODO: integrate with i18n if available
+    setLanguage(next);
   };
 
   return (
@@ -75,14 +74,14 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
               <button
                 onClick={() => setIsDark((d) => !d)}
                 className="p-2 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 transition-colors dark:border-gray-700 dark:hover:bg-gray-800 dark:text-gray-200"
-                title={isDark ? 'Light mode' : 'Dark mode'}
+                title={isDark ? t('common.light') : t('common.dark')}
               >
                 {isDark ? <SunMedium className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </button>
               <button
                 onClick={toggleLang}
                 className="p-2 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 transition-colors flex items-center space-x-1 dark:border-gray-700 dark:hover:bg-gray-800 dark:text-gray-200"
-                title="Dil / Language"
+                title={t('common.language')}
               >
                 <Languages className="h-4 w-4" />
                 <span className="text-xs font-medium uppercase">{lang}</span>
@@ -92,7 +91,7 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
                 className="bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white px-4 py-2 rounded-xl flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">Yeni Görev</span>
+                <span className="hidden sm:inline">{t('header.newTask')}</span>
               </button>
               <div className="relative ml-2 pl-2 sm:ml-4 sm:pl-4 border-l border-gray-200">
                 <button
@@ -118,8 +117,8 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
         <div className="fixed inset-0 z-[999999] pointer-events-none">
           <div className="absolute top-20 right-4 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 pointer-events-auto" ref={userMenuRef}>
             <div className="px-4 py-3 border-b border-gray-100">
-              <p className="text-sm font-medium text-gray-900">{user?.email}</p>
-              <p className="text-xs text-gray-500">Kullanıcı</p>
+              <p className="text-sm font-medium text-gray-900">{(user?.user_metadata as any)?.name || user?.email?.split('@')[0]}</p>
+              <p className="text-xs text-gray-500">{user?.email}</p>
             </div>
             
             <div className="py-1">
@@ -133,7 +132,7 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
                       className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                     >
                       <UserCircle className="h-4 w-4 mr-3 text-gray-400" />
-                      Profil
+                      {t('header.profile')}
                     </button>
               
               <button
@@ -144,7 +143,7 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
               >
                 <Settings className="h-4 w-4 mr-3 text-gray-400" />
-                Ayarlar
+                {t('header.settings')}
               </button>
 
               <button
@@ -155,7 +154,7 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
               >
                 <Bell className="h-4 w-4 mr-3 text-gray-400" />
-                Bildirimler
+                {t('header.notifications')}
               </button>
 
               <button
@@ -166,7 +165,7 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
               >
                 <HelpCircle className="h-4 w-4 mr-3 text-gray-400" />
-                Yardım
+                {t('header.help')}
               </button>
             </div>
             
@@ -180,9 +179,8 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
                     const { error } = await signOut();
                     if (error) {
                       console.error('Çıkış yapma hatası:', error);
-                    } else {
-                      console.log('Başarıyla çıkış yapıldı');
                     }
+                    
                   } catch (err) {
                     console.error('Çıkış yapma hatası:', err);
                   }
@@ -190,7 +188,7 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
                 className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
               >
                 <LogOut className="h-4 w-4 mr-3" />
-                Çıkış Yap
+                {t('header.logout')}
               </button>
             </div>
           </div>

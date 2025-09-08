@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { ArrowLeft, Calendar, Edit, Save, Bell, Lock, User as UserIcon, Shield, Activity, Clock, BarChart3, Target, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { CustomSelect } from './CustomSelect';
+// import { CustomSelect } from './CustomSelect';
 import { useTask } from '../context/TaskContext';
 import { supabase } from '../lib/supabase';
+import { useI18n } from '../context/I18nContext';
 
 // Phone helpers at module scope for reuse
 const extractNationalDigits = (input: string) => {
@@ -38,6 +39,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
   const { tasks } = state;
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
+  const { t } = useI18n();
   
   const [profileData, setProfileData] = useState({
     name: (user?.user_metadata as any)?.name || user?.email?.split('@')[0] || 'Kullanıcı',
@@ -129,19 +131,19 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
   const handleChangePassword = async () => {
     setPasswordMessage(null);
     if (!user?.email) {
-      setPasswordMessage({ type: 'error', text: 'Kullanıcı bilgisi bulunamadı.' });
+      setPasswordMessage({ type: 'error', text: t('profile.security.msg.userMissing') });
       return;
     }
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setPasswordMessage({ type: 'error', text: 'Lütfen tüm alanları doldurun.' });
+      setPasswordMessage({ type: 'error', text: t('profile.security.msg.fillAll') });
       return;
     }
     if (newPassword !== confirmPassword) {
-      setPasswordMessage({ type: 'error', text: 'Yeni şifre ile doğrulama uyuşmuyor.' });
+      setPasswordMessage({ type: 'error', text: t('profile.security.msg.mismatch') });
       return;
     }
     if (newPassword.length < 6) {
-      setPasswordMessage({ type: 'error', text: 'Yeni şifre en az 6 karakter olmalı.' });
+      setPasswordMessage({ type: 'error', text: t('profile.security.msg.minLength') });
       return;
     }
 
@@ -152,33 +154,33 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
         password: currentPassword,
       });
       if (signInError) {
-        setPasswordMessage({ type: 'error', text: 'Mevcut şifre hatalı.' });
+        setPasswordMessage({ type: 'error', text: t('profile.security.msg.currentWrong') });
         setPasswordLoading(false);
         return;
       }
 
       const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
       if (updateError) {
-        setPasswordMessage({ type: 'error', text: updateError.message || 'Şifre güncellenemedi.' });
+        setPasswordMessage({ type: 'error', text: updateError.message || t('profile.security.msg.updateFailed') });
       } else {
-        setPasswordMessage({ type: 'success', text: 'Şifre başarıyla güncellendi.' });
+        setPasswordMessage({ type: 'success', text: t('profile.security.msg.updated') });
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
       }
     } catch (e) {
-      setPasswordMessage({ type: 'error', text: 'Bir hata oluştu. Lütfen tekrar deneyin.' });
+      setPasswordMessage({ type: 'error', text: t('profile.security.msg.error') });
     } finally {
       setPasswordLoading(false);
     }
   };
 
   const tabs = [
-    { id: 'profile', label: 'Profil', icon: UserIcon },
-    { id: 'notifications', label: 'Bildirimler', icon: Bell },
-    { id: 'privacy', label: 'Gizlilik', icon: Shield },
-    { id: 'security', label: 'Güvenlik', icon: Lock },
-    { id: 'stats', label: 'İstatistikler', icon: BarChart3 }
+    { id: 'profile', label: t('profile.tabs.profile'), icon: UserIcon },
+    { id: 'notifications', label: t('profile.tabs.notifications'), icon: Bell },
+    { id: 'privacy', label: t('profile.tabs.privacy'), icon: Shield },
+    { id: 'security', label: t('profile.tabs.security'), icon: Lock },
+    { id: 'stats', label: t('profile.tabs.stats'), icon: BarChart3 }
   ];
 
   
@@ -196,7 +198,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
               >
                 <ArrowLeft className="h-5 w-5 text-gray-600" />
               </button>
-              <h1 className="text-xl font-semibold text-gray-900">Profil Ayarları</h1>
+              <h1 className="text-xl font-semibold text-gray-900">{t('profile.title')}</h1>
             </div>
             <div className="flex items-center space-x-3"></div>
           </div>
@@ -244,7 +246,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
               {activeTab === 'profile' && (
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900">Kişisel Bilgiler</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">{t('profile.personalInfo')}</h3>
                     <div className="flex items-center space-x-3">
                       {!isEditing ? (
                         <button
@@ -252,7 +254,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                           className="flex items-center space-x-2 px-4 h-11 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 transition-colors shadow-sm"
                         >
                           <Edit className="h-4 w-4" />
-                          <span>Düzenle</span>
+                          <span>{t('profile.buttons.edit')}</span>
                         </button>
                       ) : (
                         <>
@@ -260,7 +262,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                             onClick={() => setIsEditing(false)}
                             className="px-4 h-11 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 transition-colors shadow-sm"
                           >
-                            İptal
+                            {t('profile.buttons.cancel')}
                           </button>
                           <SaveProfileButton profileData={profileData} onDone={() => setIsEditing(false)} />
                         </>
@@ -270,7 +272,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Ad Soyad</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.fields.name')}</label>
                       <input
                         type="text"
                         value={profileData.name}
@@ -283,7 +285,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">E-posta</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.fields.email')}</label>
                       <input
                         type="email"
                         value={profileData.email}
@@ -293,7 +295,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Telefon</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.fields.phone')}</label>
                       <input
                         type="tel"
                         inputMode="numeric"
@@ -324,7 +326,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm font-medium text-gray-700">Katılım Tarihi</span>
+                        <span className="text-sm font-medium text-gray-700">{t('profile.tiles.joinedDate')}</span>
                       </div>
                       <p className="text-sm text-gray-600 mt-1">{profileData.joinedDate}</p>
                     </div>
@@ -332,7 +334,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="flex items-center space-x-2">
                         <Activity className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm font-medium text-gray-700">Son Aktivite</span>
+                        <span className="text-sm font-medium text-gray-700">{t('profile.tiles.lastActive')}</span>
                       </div>
                       <p className="text-sm text-gray-600 mt-1">{profileData.lastActive}</p>
                     </div>
@@ -340,7 +342,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="flex items-center space-x-2">
                         <Clock className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm font-medium text-gray-700">Saat Dilimi</span>
+                        <span className="text-sm font-medium text-gray-700">{t('profile.tiles.timezone')}</span>
                       </div>
                       <p className="text-sm text-gray-600 mt-1">{profileData.timezone}</p>
                     </div>
@@ -351,18 +353,18 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
               {/* Notifications Tab */}
               {activeTab === 'notifications' && (
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">Bildirim Ayarları</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('profile.notifications.title')}</h3>
                   
                   <div className="space-y-6">
                     <div className="space-y-4">
-                      <h4 className="text-md font-medium text-gray-700">E-posta Bildirimleri</h4>
+                      <h4 className="text-md font-medium text-gray-700">{t('profile.notifications.email.title')}</h4>
                       <div className="space-y-3">
                         {[
-                          { key: 'emailNotifications', label: 'Genel E-posta Bildirimleri' },
-                          { key: 'taskReminders', label: 'Görev Hatırlatıcıları' },
-                          { key: 'weeklyReports', label: 'Haftalık Raporlar' },
-                          { key: 'projectUpdates', label: 'Proje Güncellemeleri' },
-                          { key: 'deadlineAlerts', label: 'Son Tarih Uyarıları' }
+                          { key: 'emailNotifications', label: t('profile.notifications.email.general') },
+                          { key: 'taskReminders', label: t('profile.notifications.email.taskReminders') },
+                          { key: 'weeklyReports', label: t('profile.notifications.email.weeklyReports') },
+                          { key: 'projectUpdates', label: t('profile.notifications.email.projectUpdates') },
+                          { key: 'deadlineAlerts', label: t('profile.notifications.email.deadlineAlerts') }
                         ].map((item) => (
                           <div key={item.key} className="flex items-center justify-between">
                             <label className="text-sm font-medium text-gray-700">{item.label}</label>
@@ -379,12 +381,12 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                     </div>
                     
                     <div className="space-y-4">
-                      <h4 className="text-md font-medium text-gray-700">Push Bildirimleri</h4>
+                      <h4 className="text-md font-medium text-gray-700">{t('profile.notifications.push.title')}</h4>
                       <div className="space-y-3">
                         {[
-                          { key: 'pushNotifications', label: 'Push Bildirimleri' },
-                          { key: 'teamMentions', label: 'Takım Bahsetmeleri' },
-                          { key: 'systemUpdates', label: 'Sistem Güncellemeleri' }
+                          { key: 'pushNotifications', label: t('profile.notifications.push.pushNotifications') },
+                          { key: 'teamMentions', label: t('profile.notifications.push.teamMentions') },
+                          { key: 'systemUpdates', label: t('profile.notifications.push.systemUpdates') }
                         ].map((item) => (
                           <div key={item.key} className="flex items-center justify-between">
                             <label className="text-sm font-medium text-gray-700">{item.label}</label>
@@ -406,18 +408,18 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
               {/* Privacy Tab */}
               {activeTab === 'privacy' && (
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">Gizlilik Ayarları</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('profile.privacy.title')}</h3>
                   
                   <div className="space-y-6">
                     <div className="space-y-4">
-                      <h4 className="text-md font-medium text-gray-700">Profil Görünürlüğü</h4>
+                      <h4 className="text-md font-medium text-gray-700">{t('profile.privacy.profileVisibility.title')}</h4>
                       <div className="space-y-3">
                         {[
-                          { key: 'profileVisibility', label: 'Profil Görünürlüğü' },
-                          { key: 'showEmail', label: 'E-posta Adresini Göster' },
-                          { key: 'showActivity', label: 'Son Aktiviteyi Göster' },
-                          { key: 'showLocation', label: 'Konum Bilgisini Göster' },
-                          { key: 'showOnlineStatus', label: 'Çevrimiçi Durumunu Göster' }
+                          { key: 'profileVisibility', label: t('profile.privacy.profileVisibility.profileVisibility') },
+                          { key: 'showEmail', label: t('profile.privacy.profileVisibility.showEmail') },
+                          { key: 'showActivity', label: t('profile.privacy.profileVisibility.showActivity') },
+                          { key: 'showLocation', label: t('profile.privacy.profileVisibility.showLocation') },
+                          { key: 'showOnlineStatus', label: t('profile.privacy.profileVisibility.showOnlineStatus') }
                         ].map((item) => (
                           <div key={item.key} className="flex items-center justify-between">
                             <label className="text-sm font-medium text-gray-700">{item.label}</label>
@@ -434,11 +436,11 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                     </div>
                     
                     <div className="space-y-4">
-                      <h4 className="text-md font-medium text-gray-700">İletişim</h4>
+                      <h4 className="text-md font-medium text-gray-700">{t('profile.privacy.contact.title')}</h4>
                       <div className="space-y-3">
                         {[
-                          { key: 'allowDirectMessages', label: 'Doğrudan Mesajlara İzin Ver' },
-                          { key: 'showTaskProgress', label: 'Görev İlerlemesini Göster' }
+                          { key: 'allowDirectMessages', label: t('profile.privacy.contact.allowDirectMessages') },
+                          { key: 'showTaskProgress', label: t('profile.privacy.contact.showTaskProgress') }
                         ].map((item) => (
                           <div key={item.key} className="flex items-center justify-between">
                             <label className="text-sm font-medium text-gray-700">{item.label}</label>
@@ -460,14 +462,14 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
               {/* Security Tab */}
               {activeTab === 'security' && (
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">Güvenlik Ayarları</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('profile.security.title')}</h3>
                   
                   <div className="space-y-6">
                     <div className="space-y-4">
-                      <h4 className="text-md font-medium text-gray-700">Şifre Değiştirme</h4>
+                      <h4 className="text-md font-medium text-gray-700">{t('profile.security.password.title')}</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Mevcut Şifre</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.security.fields.current')}</label>
                           <input
                             type="password"
                             value={currentPassword}
@@ -476,7 +478,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Yeni Şifre</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.security.fields.new')}</label>
                           <input
                             type="password"
                             value={newPassword}
@@ -485,7 +487,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Yeni Şifre (Tekrar)</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.security.fields.confirm')}</label>
                           <input
                             type="password"
                             value={confirmPassword}
@@ -504,17 +506,17 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                         disabled={passwordLoading}
                         className={`inline-flex items-center px-5 h-11 rounded-xl text-white font-medium shadow-sm transition-colors ${passwordLoading ? 'bg-violet-300' : 'bg-violet-600 hover:bg-violet-700'}`}
                       >
-                        {passwordLoading ? 'Kaydediliyor...' : 'Şifreyi Güncelle'}
+                        {passwordLoading ? t('profile.security.updating') : t('profile.security.update')}
                       </button>
                     </div>
                     
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                       <div className="flex items-center space-x-2">
                         <AlertCircle className="h-5 w-5 text-yellow-600" />
-                        <span className="text-sm font-medium text-yellow-800">Güvenlik Uyarısı</span>
+                        <span className="text-sm font-medium text-yellow-800">{t('profile.security.warning.title')}</span>
                       </div>
                       <p className="text-sm text-yellow-700 mt-1">
-                        Şifrenizi düzenli olarak değiştirmenizi ve güçlü bir şifre kullanmanızı öneriyoruz.
+                        {t('profile.security.warning.text')}
                       </p>
                     </div>
                   </div>
@@ -524,13 +526,13 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
               {/* Stats Tab */}
               {activeTab === 'stats' && (
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">İstatistikler</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('profile.stats.title')}</h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-blue-600">Toplam Görev</p>
+                          <p className="text-sm font-medium text-blue-600">{t('profile.stats.cards.total')}</p>
                           <p className="text-2xl font-bold text-blue-900">{stats.totalTasks}</p>
                         </div>
                         <Target className="h-8 w-8 text-blue-600" />
@@ -540,7 +542,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                     <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-green-600">Tamamlanan</p>
+                          <p className="text-sm font-medium text-green-600">{t('profile.stats.cards.completed')}</p>
                           <p className="text-2xl font-bold text-green-900">{stats.completedTasks}</p>
                         </div>
                         <CheckCircle className="h-8 w-8 text-green-600" />
@@ -550,7 +552,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                     <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-yellow-600">Devam Eden</p>
+                          <p className="text-sm font-medium text-yellow-600">{t('profile.stats.cards.inProgress')}</p>
                           <p className="text-2xl font-bold text-yellow-900">{stats.inProgressTasks}</p>
                         </div>
                         <Clock className="h-8 w-8 text-yellow-600" />
@@ -560,7 +562,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                     <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-red-600">Geciken</p>
+                          <p className="text-sm font-medium text-red-600">{t('profile.stats.cards.overdue')}</p>
                           <p className="text-2xl font-bold text-red-900">{stats.overdueTasks}</p>
                         </div>
                         <XCircle className="h-8 w-8 text-red-600" />
@@ -570,11 +572,11 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-gray-50 rounded-xl p-6">
-                      <h4 className="text-md font-semibold text-gray-900 mb-4">Performans</h4>
+                      <h4 className="text-md font-semibold text-gray-900 mb-4">{t('profile.stats.performance.title')}</h4>
                       <div className="space-y-4">
                         <div>
                           <div className="flex justify-between text-sm mb-1">
-                            <span className="text-gray-600">Verimlilik Skoru</span>
+                            <span className="text-gray-600">{t('profile.stats.performance.score')}</span>
                             <span className="font-medium">{stats.productivityScore}%</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
@@ -586,17 +588,17 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
                         </div>
                         
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Seri Günler</span>
-                          <span className="text-lg font-semibold text-gray-900">{stats.streakDays} gün</span>
+                          <span className="text-sm text-gray-600">{t('profile.stats.performance.streak')}</span>
+                          <span className="text-lg font-semibold text-gray-900">{stats.streakDays} {t('profile.stats.performance.days')}</span>
                         </div>
                       </div>
                     </div>
                     
                     <div className="bg-gray-50 rounded-xl p-6">
-                      <h4 className="text-md font-semibold text-gray-900 mb-4">Kategoriler</h4>
+                      <h4 className="text-md font-semibold text-gray-900 mb-4">{t('profile.stats.categories.title')}</h4>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Toplam Kategori</span>
+                          <span className="text-sm text-gray-600">{t('profile.stats.categories.total')}</span>
                           <span className="font-medium">{stats.totalProjects}</span>
                         </div>
                         {/* Takım Üyeleri bilgisi mevcut değil; gerekirse eklenebilir */}
@@ -633,6 +635,7 @@ const ToggleSwitch: React.FC<{ checked: boolean; onChange: () => void }> = ({ ch
 const SaveProfileButton: React.FC<{ profileData: { name: string; phone: string }; onDone: () => void }> = ({ profileData, onDone }) => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const { t } = useI18n();
 
   const handleSave = async () => {
     setMessage(null);
@@ -665,7 +668,7 @@ const SaveProfileButton: React.FC<{ profileData: { name: string; phone: string }
         className={`flex items-center space-x-2 px-4 h-11 rounded-xl ${saving ? 'bg-violet-300' : 'bg-violet-600 hover:bg-violet-700'} text-white transition-colors shadow-sm`}
       >
         <Save className="h-4 w-4" />
-        <span>{saving ? 'Kaydediliyor...' : 'Kaydet'}</span>
+        <span>{saving ? t('profile.buttons.saving') : t('profile.buttons.save')}</span>
       </button>
     </div>
   );

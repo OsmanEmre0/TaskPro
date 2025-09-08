@@ -4,11 +4,12 @@ import { Task } from '../types/Task';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts';
+import { useI18n } from '../context/I18nContext';
 
 const FILTERS = [
-  { key: 'week', label: 'Bu Hafta' },
-  { key: 'month', label: 'Bu Ay' },
-  { key: 'all', label: 'Tümü' }
+  { key: 'week', labelKey: 'stats.filters.week' },
+  { key: 'month', labelKey: 'stats.filters.month' },
+  { key: 'all', labelKey: 'stats.filters.all' }
 ];
 
 const COLORS = [
@@ -45,6 +46,7 @@ const Statistics: React.FC = () => {
   const { state } = useTask();
   const { tasks } = state;
   const [dateFilter, setDateFilter] = useState('week');
+  const { t } = useI18n();
 
   const filteredTasks = useMemo(() => filterTasksByDate(tasks, dateFilter), [tasks, dateFilter]);
 
@@ -55,17 +57,17 @@ const Statistics: React.FC = () => {
 
   // Bar chart için tüm durumları göster (0 olsa bile)
   const barChartData = [
-    { name: 'Tamamlandı', value: completedCount, fill: COLORS[0] },
-    { name: 'Devam Ediyor', value: inProgressCount, fill: COLORS[1] },
-    { name: 'Yapılacak', value: todoCount, fill: COLORS[2] }
+    { name: t('stats.legend.completed'), value: completedCount, fill: COLORS[0] },
+    { name: t('stats.legend.inProgress'), value: inProgressCount, fill: COLORS[1] },
+    { name: t('stats.legend.todo'), value: todoCount, fill: COLORS[2] }
   ];
 
   // Pie chart verisini her durumda sabit tut (0 değerler de dahil)
   // Böylece "Tümü" seçiliyken de renkler ve efsane (legend) doğru eşleşir
   const pieChartData = [
-    { name: 'Tamamlandı', value: completedCount, fill: COLORS[0] },
-    { name: 'Devam Ediyor', value: inProgressCount, fill: COLORS[1] },
-    { name: 'Yapılacak', value: todoCount, fill: COLORS[2] }
+    { name: t('stats.legend.completed'), value: completedCount, fill: COLORS[0] },
+    { name: t('stats.legend.inProgress'), value: inProgressCount, fill: COLORS[1] },
+    { name: t('stats.legend.todo'), value: todoCount, fill: COLORS[2] }
   ];
 
   const hasBarData = barChartData.some(item => item.value > 0);
@@ -73,7 +75,7 @@ const Statistics: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 md:p-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-violet-700">Görev İstatistikleri</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-violet-700">{t('stats.title')}</h1>
       <div className="flex gap-2 sm:gap-4 mb-4 sm:mb-6 flex-wrap">
         {FILTERS.map(f => (
           <button
@@ -81,13 +83,13 @@ const Statistics: React.FC = () => {
             onClick={() => setDateFilter(f.key)}
             className={`px-3 sm:px-4 py-2 rounded-xl text-sm sm:text-base font-medium border transition-all duration-200 ${dateFilter === f.key ? 'bg-gradient-to-r from-violet-500 to-purple-600 text-white border-violet-500' : 'bg-white text-violet-700 border-violet-200 hover:bg-violet-50'}`}
           >
-            {f.label}
+            {t(f.labelKey)}
           </button>
         ))}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 md:mb-8">
         <div className="bg-white rounded-2xl shadow p-4 sm:p-6 flex flex-col items-center w-full">
-          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-slate-700">Görev Durum Dağılımı</h2>
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-slate-700">{t('stats.section.distribution')}</h2>
           <div className="w-full h-64 sm:h-72 md:h-80 relative">
             {hasBarData ? (
               <>
@@ -123,14 +125,14 @@ const Statistics: React.FC = () => {
               <div className="flex items-center justify-center h-full text-gray-500">
                 <div className="text-center">
                   <div className="text-4xl mb-2">📊</div>
-                  <p>Bu dönemde görev bulunmuyor</p>
+                  <p>{t('stats.empty')}</p>
                 </div>
               </div>
             )}
           </div>
         </div>
         <div className="bg-white rounded-2xl shadow p-4 sm:p-6 flex flex-col items-center w-full">
-          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-slate-700">Oranlar</h2>
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-slate-700">{t('stats.section.ratios')}</h2>
           <div className="w-full h-64 sm:h-72 md:h-80">
             <div className="relative w-full h-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -174,19 +176,19 @@ const Statistics: React.FC = () => {
       <div className="bg-white rounded-2xl shadow p-4 sm:p-6 flex flex-col md:flex-row gap-4 sm:gap-6 md:gap-8 items-center justify-between">
         <div className="flex flex-col items-center">
           <span className="text-xl sm:text-2xl font-bold text-emerald-600">{completedCount}</span>
-          <span className="text-xs sm:text-sm text-slate-600">Tamamlanan Görev</span>
+          <span className="text-xs sm:text-sm text-slate-600">{t('stats.count.completed')}</span>
         </div>
         <div className="flex flex-col items-center">
           <span className="text-xl sm:text-2xl font-bold text-blue-600">{inProgressCount}</span>
-          <span className="text-xs sm:text-sm text-slate-600">Devam Eden Görev</span>
+          <span className="text-xs sm:text-sm text-slate-600">{t('stats.count.inProgress')}</span>
         </div>
         <div className="flex flex-col items-center">
           <span className="text-xl sm:text-2xl font-bold text-orange-600">{todoCount}</span>
-          <span className="text-xs sm:text-sm text-slate-600">Yapılacak Görev</span>
+          <span className="text-xs sm:text-sm text-slate-600">{t('stats.count.todo')}</span>
         </div>
         <div className="flex flex-col items-center">
           <span className="text-xl sm:text-2xl font-bold text-violet-700">{filteredTasks.length}</span>
-          <span className="text-xs sm:text-sm text-slate-600">Toplam</span>
+          <span className="text-xs sm:text-sm text-slate-600">{t('stats.count.total')}</span>
         </div>
       </div>
     </div>

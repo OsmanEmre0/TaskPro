@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Edit2, Trash2, Clock, Flag, CheckCircle, Circle, PlayCircle, MoreVertical } from 'lucide-react';
 import { Task } from '../types/Task';
 import { useTask } from '../context/TaskContext';
+import { useI18n } from '../context/I18nContext';
 
 interface TaskCardProps {
   task: Task;
@@ -9,6 +10,7 @@ interface TaskCardProps {
 
 export function TaskCard({ task }: TaskCardProps) {
   const { updateTask, deleteTask, openModal } = useTask();
+  const { t, lang } = useI18n();
   const [showConfirm, setShowConfirm] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -52,7 +54,8 @@ export function TaskCard({ task }: TaskCardProps) {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('tr-TR', {
+    const locale = lang === 'tr' ? 'tr-TR' : 'en-US';
+    return date.toLocaleDateString(locale, {
       day: 'numeric',
       month: 'short'
     });
@@ -161,7 +164,7 @@ export function TaskCard({ task }: TaskCardProps) {
           <div className="flex items-center space-x-2">
             <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
               <Flag className="h-3 w-3 mr-1" />
-              {task.priority === 'high' ? 'Yüksek' : task.priority === 'medium' ? 'Orta' : 'Düşük'}
+              {task.priority === 'high' ? t('filter.priority.high') : task.priority === 'medium' ? t('filter.priority.medium') : t('filter.priority.low')}
             </span>
             
             <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
@@ -169,8 +172,8 @@ export function TaskCard({ task }: TaskCardProps) {
                 ? 'bg-amber-50/80 text-amber-700 backdrop-blur-sm'
                 : getStatusColor(task.status)
             }`}>
-              {task.status === 'completed' ? 'Tamamlandı' : 
-               task.status === 'in-progress' ? 'Devam Ediyor' : 'Yapılacak'}
+              {task.status === 'completed' ? t('filter.status.completed') : 
+               task.status === 'in-progress' ? t('filter.status.inProgress') : t('filter.status.todo')}
             </span>
           </div>
           
@@ -189,20 +192,20 @@ export function TaskCard({ task }: TaskCardProps) {
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 mb-4 shadow-lg">
               <Trash2 className="h-8 w-8 text-rose-600" />
             </div>
-            <h3 className="text-xl font-bold mb-2 text-slate-800 text-center">Görevi silmek istediğinize emin misiniz?</h3>
-            <p className="text-slate-500 text-center mb-6">Bu işlem geri alınamaz.</p>
+            <h3 className="text-xl font-bold mb-2 text-slate-800 text-center">{t('task.delete.title')}</h3>
+            <p className="text-slate-500 text-center mb-6">{t('task.delete.subtitle')}</p>
             <div className="flex justify-center gap-3 w-full">
               <button
                 className="px-5 py-2.5 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold transition-all duration-150 shadow-sm"
                 onClick={() => setShowConfirm(false)}
               >
-                Hayır
+                {t('task.delete.cancel')}
               </button>
               <button
                 className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-rose-600 text-white hover:from-rose-600 hover:to-rose-700 font-semibold transition-all duration-150 shadow-lg"
                 onClick={() => { deleteTask(task.id); setShowConfirm(false); }}
               >
-                Evet, Sil
+                {t('task.delete.confirm')}
               </button>
             </div>
           </div>

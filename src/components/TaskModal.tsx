@@ -3,10 +3,12 @@ import { X, Calendar, Flag, FileText, CheckCircle, Tag } from 'lucide-react';
 import { useTask } from '../context/TaskContext';
 import { Task } from '../types/Task';
 import { CustomSelect } from './CustomSelect';
+import { useI18n } from '../context/I18nContext';
 
 export function TaskModal() {
   const { state, addTask, updateTask, closeModal } = useTask();
   const { isModalOpen, selectedTask } = state;
+  const { t } = useI18n();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -46,18 +48,18 @@ export function TaskModal() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = 'Görev başlığı gereklidir';
+      newErrors.title = t('taskModal.error.titleRequired');
     }
 
     if (!formData.dueDate) {
-      newErrors.dueDate = 'Bitiş tarihi gereklidir';
+      newErrors.dueDate = t('taskModal.error.dueDateRequired');
     }
 
     if (!formData.priority) {
-      newErrors.priority = 'Öncelik seçilmelidir';
+      newErrors.priority = t('taskModal.error.priorityRequired');
     }
     if (!formData.status) {
-      newErrors.status = 'Durum seçilmelidir';
+      newErrors.status = t('taskModal.error.statusRequired');
     }
 
     setErrors(newErrors);
@@ -104,7 +106,7 @@ export function TaskModal() {
       <div className="bg-slate-50 dark:bg-slate-50 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto border border-violet-100 dark:border-violet-200">
         <div className="flex items-center justify-between p-6 border-b border-violet-100 dark:border-violet-200 bg-gradient-to-r from-violet-50/80 to-purple-50/60">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-            {selectedTask ? 'Görev Düzenle' : 'Yeni Görev'}
+            {selectedTask ? t('taskModal.editTitle') : t('taskModal.newTitle')}
           </h2>
           <button
             onClick={closeModal}
@@ -117,7 +119,7 @@ export function TaskModal() {
           <div>
             <label htmlFor="title" className="text-sm font-semibold text-black mb-2 flex items-center">
               <FileText className="h-4 w-4 mr-2" />
-              Görev Başlığı *
+              {t('taskModal.field.title')} *
             </label>
             <input
               type="text"
@@ -126,14 +128,14 @@ export function TaskModal() {
               value={formData.title}
               onChange={handleChange}
               className={`w-full px-4 py-3 border rounded-xl bg-white text-slate-900 focus:ring-2 focus:ring-violet-400/40 focus:border-violet-400 transition-all duration-200 shadow-sm placeholder:text-slate-400 ${errors.title ? 'border-rose-300' : 'border-violet-100'}`}
-              placeholder="Görev başlığını girin..."
+              placeholder={t('taskModal.placeholder.title')}
             />
             {errors.title && <p className="mt-1 text-sm text-rose-600 dark:text-rose-400 font-medium">{errors.title}</p>}
           </div>
           <div>
             <label htmlFor="description" className="text-sm font-semibold text-black mb-2 flex items-center">
               <FileText className="h-4 w-4 mr-2" />
-              Açıklama
+              {t('taskModal.field.description')}
             </label>
             <textarea
               id="description"
@@ -142,7 +144,7 @@ export function TaskModal() {
               onChange={handleChange}
               rows={3}
               className="w-full px-4 py-3 border rounded-xl bg-white text-slate-900 focus:ring-2 focus:ring-violet-400/40 focus:border-violet-400 transition-all duration-200 shadow-sm border-violet-100 placeholder:text-slate-400 resize-none"
-              placeholder="Görev açıklamasını girin..."
+              placeholder={t('taskModal.placeholder.description')}
             />
           </div>
 
@@ -150,20 +152,20 @@ export function TaskModal() {
             <div>
               <label htmlFor="priority" className="text-sm font-semibold text-black mb-2 flex items-center">
                 <Flag className="h-4 w-4 mr-2" />
-                Öncelik *
+                {t('taskModal.field.priority')} *
               </label>
               <CustomSelect
                 options={[
-                  { value: 'low', label: 'Düşük' },
-                  { value: 'medium', label: 'Orta' },
-                  { value: 'high', label: 'Yüksek' },
+                  { value: 'low', label: t('filter.priority.low') },
+                  { value: 'medium', label: t('filter.priority.medium') },
+                  { value: 'high', label: t('filter.priority.high') },
                 ]}
                 value={formData.priority}
                 onChange={(val) => {
                   setFormData(prev => ({ ...prev, priority: val }));
                   if (errors.priority) setErrors(prev => ({ ...prev, priority: '' }));
                 }}
-                placeholder="Öncelik seçin"
+                placeholder={t('taskModal.placeholder.selectPriority')}
                 className={`w-full ${errors.priority ? 'border-rose-300' : ''}`}
               />
               {errors.priority && <p className="mt-1 text-sm text-rose-600 dark:text-rose-400 font-medium">{errors.priority}</p>}
@@ -172,20 +174,20 @@ export function TaskModal() {
             <div>
               <label htmlFor="status" className="text-sm font-semibold text-black mb-2 flex items-center">
                 <CheckCircle className="h-4 w-4 mr-2" />
-                Durum *
+                {t('taskModal.field.status')} *
               </label>
               <CustomSelect
                 options={[
-                  { value: 'todo', label: 'Yapılacak' },
-                  { value: 'in-progress', label: 'Devam Ediyor' },
-                  { value: 'completed', label: 'Tamamlandı' },
+                  { value: 'todo', label: t('filter.status.todo') },
+                  { value: 'in-progress', label: t('filter.status.inProgress') },
+                  { value: 'completed', label: t('filter.status.completed') },
                 ]}
                 value={formData.status}
                 onChange={(val) => {
                   setFormData(prev => ({ ...prev, status: val }));
                   if (errors.status) setErrors(prev => ({ ...prev, status: '' }));
                 }}
-                placeholder="Durum seçin"
+                placeholder={t('taskModal.placeholder.selectStatus')}
                 className={`w-full ${errors.status ? 'border-rose-300' : ''}`}
               />
               {errors.status && <p className="mt-1 text-sm text-rose-600 dark:text-rose-400 font-medium">{errors.status}</p>}
@@ -195,7 +197,7 @@ export function TaskModal() {
           <div>
             <label htmlFor="dueDate" className="text-sm font-semibold text-black mb-2 flex items-center">
               <Calendar className="h-4 w-4 mr-2" />
-              Bitiş Tarihi *
+              {t('taskModal.field.dueDate')} *
             </label>
             <input
               type="date"
@@ -211,7 +213,7 @@ export function TaskModal() {
           <div>
             <label htmlFor="category" className="text-sm font-semibold text-black mb-2 flex items-center">
               <Tag className="h-4 w-4 mr-2" />
-              Kategori
+              {t('taskModal.field.category')}
             </label>
             <input
               type="text"
@@ -220,7 +222,7 @@ export function TaskModal() {
               value={formData.category}
               onChange={handleChange}
               className="w-full px-4 py-3 border rounded-xl bg-white text-slate-900 focus:ring-2 focus:ring-violet-400/40 focus:border-violet-400 transition-all duration-200 shadow-sm border-violet-100"
-              placeholder="Kategori girin..."
+              placeholder={t('taskModal.placeholder.category')}
             />
           </div>
 
@@ -230,13 +232,13 @@ export function TaskModal() {
               onClick={closeModal}
               className="flex-1 px-6 py-3 text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 dark:hover:bg-gray-700 rounded-xl transition-all duration-200 font-medium border border-gray-200 dark:border-gray-800"
             >
-              İptal
+              {t('taskModal.cancel')}
             </button>
             <button
               type="submit"
               className="flex-1 px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 border-0"
             >
-              {selectedTask ? 'Güncelle' : 'Oluştur'}
+              {selectedTask ? t('taskModal.update') : t('taskModal.create')}
             </button>
           </div>
         </form>

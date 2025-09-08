@@ -16,12 +16,14 @@ import NotificationsPage from './components/NotificationsPage.tsx';
 import { useTaskFilters } from './hooks/useTaskFilters';
 import { Sidebar } from './components/Sidebar';
 import { Statistics } from './components/Statistics';
+import { useI18n } from './context/I18nContext';
 
 function AppContent() {
   const { state, dispatch } = useTask();
   const { user, loading } = useAuth();
   const { tasks, filters, viewMode } = state;
   const [currentPage, setCurrentPage] = useState('main');
+  const { t } = useI18n();
 
   // Handle filtering
   const setFilteredTasks = useCallback((filtered: any[]) => {
@@ -40,7 +42,7 @@ function AppContent() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-100 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600 font-medium">Yükleniyor...</p>
+          <p className="text-slate-600 font-medium">{t('common.loading')}</p>
         </div>
       </div>
     );

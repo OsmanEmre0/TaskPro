@@ -2,19 +2,22 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTask } from '../context/TaskContext';
 import { Task } from '../types/Task';
+import { useI18n } from '../context/I18nContext';
 
 export function TaskCalendar() {
   const { state } = useTask();
   const { filteredTasks } = state;
   const [currentDate, setCurrentDate] = useState(new Date());
   const [previewTask, setPreviewTask] = useState<Task | null>(null);
+  const { lang, t } = useI18n();
 
-  const monthNames = [
-    'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-    'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
-  ];
+  const locale = lang === 'tr' ? 'tr-TR' : 'en-US';
 
-  const weekDays = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
+  const weekDays = Array.from({ length: 7 }).map((_, i) => {
+    const base = new Date(2021, 0, 3); // Sunday, Jan 3, 2021
+    base.setDate(base.getDate() + i);
+    return base.toLocaleDateString(locale, { weekday: 'short' });
+  });
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -83,7 +86,7 @@ export function TaskCalendar() {
         <div className="flex flex-col sm:flex-row items-center justify-between p-4 sm:p-6 border-b border-gray-200/50 bg-gradient-to-r from-white to-gray-50/50 gap-4">
           <div className="flex items-center space-x-4">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-800">
-              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+              {currentDate.toLocaleDateString(locale, { month: 'long', year: 'numeric' })}
             </h2>
           </div>
           
@@ -148,7 +151,7 @@ export function TaskCalendar() {
                       
                       {tasks.length > 2 && (
                         <div className="text-xs text-slate-500 font-medium bg-slate-100 px-1 sm:px-2 py-1 rounded-lg">
-                          +{tasks.length - 2} daha
+                          {lang === 'tr' ? `+${tasks.length - 2} daha` : `+${tasks.length - 2} more`}
                         </div>
                       )}
                     </div>
@@ -183,17 +186,17 @@ export function TaskCalendar() {
                 previewTask.priority === 'medium' ? 'bg-amber-100 text-amber-700' :
                 'bg-emerald-100 text-emerald-700'
               }`}>
-                {previewTask.priority === 'high' ? 'Yüksek' : previewTask.priority === 'medium' ? 'Orta' : 'Düşük'}
+                {previewTask.priority === 'high' ? t('filter.priority.high') : previewTask.priority === 'medium' ? t('filter.priority.medium') : t('filter.priority.low')}
               </span>
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                 previewTask.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
                 previewTask.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
                 'bg-amber-100 text-amber-700'
               }`}>
-                {previewTask.status === 'completed' ? 'Tamamlandı' : previewTask.status === 'in-progress' ? 'Devam Ediyor' : 'Yapılacak'}
+                {previewTask.status === 'completed' ? t('filter.status.completed') : previewTask.status === 'in-progress' ? t('filter.status.inProgress') : t('filter.status.todo')}
               </span>
               <span className="px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
-                {new Date(previewTask.dueDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                {new Date(previewTask.dueDate).toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })}
               </span>
             </div>
           </div>
