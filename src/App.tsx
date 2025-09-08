@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { TaskProvider, useTask } from './context/TaskContext';
 import { useAuth } from './context/AuthContext';
@@ -9,6 +9,8 @@ import { TaskBoard } from './components/TaskBoard';
 import { TaskCalendar } from './components/TaskCalendar';
 import { TaskModal } from './components/TaskModal';
 import { LoginScreen } from './components/LoginScreen';
+import { ProfilePage } from './components/ProfilePage';
+import SettingsPage from './components/SettingsPage';
 import { useTaskFilters } from './hooks/useTaskFilters';
 import { Sidebar } from './components/Sidebar';
 import { Statistics } from './components/Statistics';
@@ -17,6 +19,7 @@ function AppContent() {
   const { state, dispatch } = useTask();
   const { user, loading } = useAuth();
   const { tasks, filters, viewMode } = state;
+  const [currentPage, setCurrentPage] = useState('main');
 
   // Handle filtering
   const setFilteredTasks = useCallback((filtered: any[]) => {
@@ -45,6 +48,14 @@ function AppContent() {
     return <LoginScreen />;
   }
 
+  // If profile page is open, show only profile page
+  if (currentPage === 'profile') {
+    return <ProfilePage onBack={() => setCurrentPage('main')} />;
+  }
+  if (currentPage === 'settings') {
+    return <SettingsPage onBack={() => setCurrentPage('main')} />;
+  }
+
   const renderContent = () => {
     switch (viewMode) {
       case 'board':
@@ -59,13 +70,13 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-100 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-100 flex h-full">
       <Sidebar />
-      <div className="flex-1 min-w-0 lg:ml-0 ml-16 flex flex-col">
-        <Header />
+      <div className="flex-1 min-w-0 flex flex-col ml-16 2xl:ml-0 bg-gradient-to-r from-violet-500/5 to-purple-500/5">
+        <Header onProfileClick={() => setCurrentPage('profile')} onSettingsClick={() => setCurrentPage('settings')} />
         <FilterBar />
-        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative w-full">
-          <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 to-purple-500/5 rounded-3xl -z-10"></div>
+        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative w-full z-10">
+          <div className="absolute inset-0  rounded-3xl -z-10"></div>
           {renderContent()}
         </main>
         <TaskModal />

@@ -16,14 +16,14 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile overlay */}
+      {/* Mobile and tablet overlay */}
       {open && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
           onClick={() => setOpen(false)}
         />
       )}
-      <aside className={`fixed top-0 left-0 h-screen z-30 transition-all duration-300 ${open ? 'w-64' : 'w-16'} bg-white shadow-lg border-r border-gray-100 flex flex-col`}> 
+      <aside className={`fixed top-0 left-0 h-screen z-30 transition-all duration-300 ${open ? 'w-56' : 'w-16'} lg:${open ? 'w-64' : 'w-16'} bg-white shadow-lg border-r border-gray-100 flex flex-col`}> 
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
           <div className="flex items-center space-x-2">
             <CheckSquare className="h-6 w-6 text-violet-600" />

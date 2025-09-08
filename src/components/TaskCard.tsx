@@ -138,7 +138,7 @@ export function TaskCard({ task }: TaskCardProps) {
       </div>
       {/* Silme Onay Popup'ı */}
       {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 animate-fade-in" onClick={() => setShowConfirm(false)}>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 animate-fade-in" onClick={() => setShowConfirm(false)}>
           <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm relative flex flex-col items-center border border-gray-100 animate-pop-in" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 mb-4 shadow-lg">
               <Trash2 className="h-8 w-8 text-rose-600" />

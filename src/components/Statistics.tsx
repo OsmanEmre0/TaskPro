@@ -52,27 +52,6 @@ const Statistics: React.FC = () => {
   const inProgressCount = filteredTasks.filter((t: Task) => t.status === 'in-progress').length;
   const todoCount = filteredTasks.filter((t: Task) => t.status === 'todo').length;
 
-  // Debug için console.log
-  console.log('Statistics Debug:', {
-    totalTasks: tasks.length,
-    filteredTasks: filteredTasks.length,
-    completedCount,
-    inProgressCount,
-    todoCount,
-    dateFilter,
-    tasks: tasks.map(t => ({ 
-      title: t.title, 
-      status: t.status, 
-      dueDate: t.dueDate,
-      dueDateObj: new Date(t.dueDate)
-    })),
-    filteredTasksDetails: filteredTasks.map(t => ({ 
-      title: t.title, 
-      status: t.status, 
-      dueDate: t.dueDate,
-      dueDateObj: new Date(t.dueDate)
-    }))
-  });
 
   // Bar chart için tüm durumları göster (0 olsa bile)
   const barChartData = [

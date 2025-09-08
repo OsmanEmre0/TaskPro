@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTask } from '../context/TaskContext';
-import { TaskCard } from './TaskCard';
 import { Task } from '../types/Task';
 
 export function TaskCalendar() {
@@ -75,18 +74,15 @@ export function TaskCalendar() {
     });
   };
 
-  const goToToday = () => {
-    setCurrentDate(new Date());
-  };
 
   const days = getDaysInMonth(currentDate);
 
   return (
     <>
       <div className="bg-gradient-to-br from-white to-gray-50/30 rounded-2xl shadow-lg border border-gray-200/50 overflow-hidden backdrop-blur-sm">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200/50 bg-gradient-to-r from-white to-gray-50/50">
+        <div className="flex flex-col sm:flex-row items-center justify-between p-4 sm:p-6 border-b border-gray-200/50 bg-gradient-to-r from-white to-gray-50/50 gap-4">
           <div className="flex items-center space-x-4">
-            <h2 className="text-2xl font-bold text-slate-800">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-800">
               {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
             </h2>
           </div>
@@ -109,7 +105,7 @@ export function TaskCalendar() {
 
         <div className="grid grid-cols-7 gap-px bg-gray-200/50">
           {weekDays.map(day => (
-            <div key={day} className="bg-gradient-to-b from-slate-50 to-gray-50 p-3 text-center text-sm font-semibold text-slate-700">
+            <div key={day} className="bg-gradient-to-b from-slate-50 to-gray-50 p-2 sm:p-3 text-center text-xs sm:text-sm font-semibold text-slate-700">
               {day}
             </div>
           ))}
@@ -121,23 +117,23 @@ export function TaskCalendar() {
             return (
               <div
                 key={index}
-                className={`p-3 min-h-[120px] transition-all duration-200 ${
+                className={`p-2 sm:p-3 min-h-[80px] sm:min-h-[120px] transition-all duration-200 ${
                   day ? 'bg-white hover:bg-gradient-to-br hover:from-violet-50 hover:to-purple-50 cursor-pointer' : 'bg-gray-50/50'
                 } ${isToday ? 'bg-gradient-to-br from-violet-50 to-purple-50 ring-2 ring-violet-200' : ''}`}
               >
                 {day && (
                   <>
-                    <div className={`text-sm font-semibold mb-2 ${
+                    <div className={`text-xs sm:text-sm font-semibold mb-1 sm:mb-2 ${
                       isToday ? 'text-violet-600' : 'text-slate-800'
                     }`}>
                       {day.getDate()}
                     </div>
                     
-                    <div className="space-y-1.5">
-                      {tasks.map(task => (
+                    <div className="space-y-1 sm:space-y-1.5">
+                      {tasks.slice(0, 2).map(task => (
                         <div
                           key={task.id}
-                          className={`text-xs p-2 rounded-lg truncate font-medium shadow-sm ${
+                          className={`text-xs p-1 sm:p-2 rounded-lg truncate font-medium shadow-sm ${
                             task.priority === 'high' ? 'bg-gradient-to-r from-rose-100 to-pink-100 text-rose-800 border border-rose-200' :
                             task.priority === 'medium' ? 'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 border border-amber-200' :
                             'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 border border-emerald-200'
@@ -151,7 +147,7 @@ export function TaskCalendar() {
                       ))}
                       
                       {tasks.length > 2 && (
-                        <div className="text-xs text-slate-500 font-medium bg-slate-100 px-2 py-1 rounded-lg">
+                        <div className="text-xs text-slate-500 font-medium bg-slate-100 px-1 sm:px-2 py-1 rounded-lg">
                           +{tasks.length - 2} daha
                         </div>
                       )}
@@ -170,7 +166,7 @@ export function TaskCalendar() {
           onClick={() => setPreviewTask(null)}
         >
           <div
-            className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md relative"
+            className="bg-white rounded-2xl shadow-2xl p-4 sm:p-6 w-full max-w-md mx-4 sm:mx-0 relative"
             onClick={e => e.stopPropagation()}
           >
             <button

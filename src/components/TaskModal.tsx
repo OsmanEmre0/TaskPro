@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Calendar, Flag, FileText, CheckCircle, Tag } from 'lucide-react';
 import { useTask } from '../context/TaskContext';
 import { Task } from '../types/Task';
+import { CustomSelect } from './CustomSelect';
 
 export function TaskModal() {
   const { state, addTask, updateTask, closeModal } = useTask();
@@ -151,19 +152,20 @@ export function TaskModal() {
                 <Flag className="h-4 w-4 mr-2" />
                 Öncelik *
               </label>
-              <select
-                id="priority"
-                name="priority"
+              <CustomSelect
+                options={[
+                  { value: 'low', label: 'Düşük' },
+                  { value: 'medium', label: 'Orta' },
+                  { value: 'high', label: 'Yüksek' },
+                ]}
                 value={formData.priority}
-                onChange={handleChange}
-                className={`w-full px-4 py-3 border rounded-xl bg-white text-slate-900 focus:ring-2 focus:ring-violet-400/40 focus:border-violet-400 transition-all duration-200 shadow-sm border-violet-100 ${errors.priority ? 'border-rose-300' : ''}`}
-                required
-              >
-                <option value="" disabled>Öncelik seçin</option>
-                <option value="low">Düşük</option>
-                <option value="medium">Orta</option>
-                <option value="high">Yüksek</option>
-              </select>
+                onChange={(val) => {
+                  setFormData(prev => ({ ...prev, priority: val }));
+                  if (errors.priority) setErrors(prev => ({ ...prev, priority: '' }));
+                }}
+                placeholder="Öncelik seçin"
+                className={`w-full ${errors.priority ? 'border-rose-300' : ''}`}
+              />
               {errors.priority && <p className="mt-1 text-sm text-rose-600 dark:text-rose-400 font-medium">{errors.priority}</p>}
             </div>
 
@@ -172,19 +174,20 @@ export function TaskModal() {
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Durum *
               </label>
-              <select
-                id="status"
-                name="status"
+              <CustomSelect
+                options={[
+                  { value: 'todo', label: 'Yapılacak' },
+                  { value: 'in-progress', label: 'Devam Ediyor' },
+                  { value: 'completed', label: 'Tamamlandı' },
+                ]}
                 value={formData.status}
-                onChange={handleChange}
-                className={`w-full px-4 py-3 border rounded-xl bg-white text-slate-900 focus:ring-2 focus:ring-violet-400/40 focus:border-violet-400 transition-all duration-200 shadow-sm border-violet-100 ${errors.status ? 'border-rose-300' : ''}`}
-                required
-              >
-                <option value="" disabled>Durum seçin</option>
-                <option value="todo">Yapılacak</option>
-                <option value="in-progress">Devam Ediyor</option>
-                <option value="completed">Tamamlandı</option>
-              </select>
+                onChange={(val) => {
+                  setFormData(prev => ({ ...prev, status: val }));
+                  if (errors.status) setErrors(prev => ({ ...prev, status: '' }));
+                }}
+                placeholder="Durum seçin"
+                className={`w-full ${errors.status ? 'border-rose-300' : ''}`}
+              />
               {errors.status && <p className="mt-1 text-sm text-rose-600 dark:text-rose-400 font-medium">{errors.status}</p>}
             </div>
           </div>
