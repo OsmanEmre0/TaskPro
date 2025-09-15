@@ -9,7 +9,6 @@ interface SettingsPageProps {
 }
 
 export function SettingsPage({ onBack }: SettingsPageProps) {
-  const [isDark, setIsDark] = useState<boolean>(false);
   const { lang, setLanguage, t } = useI18n();
   const [emailReminders, setEmailReminders] = useState<boolean>(() => localStorage.getItem('emailReminders') === 'true');
   const [pushEnabled, setPushEnabled] = useState<boolean>(() => localStorage.getItem('pushEnabled') === 'true');
@@ -17,21 +16,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
   const { setViewMode } = useTask();
   const [defaultView, setDefaultView] = useState<'list' | 'calendar' | 'board' | 'stats'>(() => (localStorage.getItem('defaultView') as any) || 'list');
 
-  useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark') setIsDark(true);
-  }, []);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDark]);
+  
 
   useEffect(() => {
     localStorage.setItem('emailReminders', String(emailReminders));
@@ -82,28 +67,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
             </div>
           </section>
 
-          <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-            <div className="flex items-center mb-4">
-              <Moon className="h-5 w-5 text-violet-600 mr-2" />
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('settings.theme')}</h2>
-            </div>
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={() => setIsDark(false)}
-                className={`px-4 h-10 rounded-lg border text-sm font-medium flex items-center space-x-2 transition-colors ${!isDark ? 'bg-violet-600 text-white border-violet-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
-              >
-                <SunMedium className="h-4 w-4" />
-                <span>{t('common.light')}</span>
-              </button>
-              <button
-                onClick={() => setIsDark(true)}
-                className={`px-4 h-10 rounded-lg border text-sm font-medium flex items-center space-x-2 transition-colors ${isDark ? 'bg-violet-600 text-white border-violet-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
-              >
-                <Moon className="h-4 w-4" />
-                <span>{t('common.dark')}</span>
-              </button>
-            </div>
-          </section>
+          
 
           <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center mb-4">

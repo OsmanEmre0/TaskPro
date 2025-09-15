@@ -17,7 +17,6 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
   // Sidebar state removed (unused)
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const [isDark, setIsDark] = useState<boolean>(false);
   const { lang, setLanguage, t } = useI18n();
 
   // Close user menu when clicking outside
@@ -41,21 +40,7 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
     }
   }, [userMenuOpen]);
 
-  useEffect(() => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDark]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark') setIsDark(true);
-  }, []);
+  
 
   const toggleLang = () => {
     const next = lang === 'tr' ? 'en' : 'tr';
@@ -71,13 +56,7 @@ export function Header({ onProfileClick, onSettingsClick, onHelpClick, onNotific
               
             </div>
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <button
-                onClick={() => setIsDark((d) => !d)}
-                className="p-2 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 transition-colors dark:border-gray-700 dark:hover:bg-gray-800 dark:text-gray-200"
-                title={isDark ? t('common.light') : t('common.dark')}
-              >
-                {isDark ? <SunMedium className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </button>
+            
               <button
                 onClick={toggleLang}
                 className="p-2 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 transition-colors flex items-center space-x-1 dark:border-gray-700 dark:hover:bg-gray-800 dark:text-gray-200"

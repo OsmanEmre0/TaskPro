@@ -99,7 +99,7 @@ function App() {
   return (
     <AuthProvider>
       <TaskProvider>
-        <AppContent />
+          <AppContent />
       </TaskProvider>
     </AuthProvider>
   );
