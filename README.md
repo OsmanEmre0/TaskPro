@@ -101,4 +101,6 @@ Migrasyonlar `supabase/migrations` klasöründedir. Projenizde Supabase CLI/Stud
 - Ortam değişkenlerini üretim ortamında build öncesi sağlamalısınız.
 
 ## Lisans
-Bu proje için lisans belirtilmemiştir. Kurum/ekip politikanıza göre lisans dosyası ekleyin (örn. MIT).
+Bu proje **MIT Lisansı** ile lisanslanmıştır. Ayrıntılar için kökteki `LICENSE` dosyasına bakın.
+
+Telif Hakkı (c) 2025 Osman Emre Sarıahmetoğlu
